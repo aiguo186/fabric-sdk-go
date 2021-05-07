@@ -8,6 +8,8 @@ SPDX-License-Identifier: Apache-2.0
 package fabsdk
 
 import (
+	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
+	"github.com/hyperledger/fabric-sdk-go/pkg/client/ledger"
 	"github.com/aiguo186/fabric-sdk-go/internal/github.com/hyperledger/fabric/core/operations"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/logging"
 	coptions "github.com/hyperledger/fabric-sdk-go/pkg/common/options"
@@ -374,7 +376,24 @@ func (sdk *FabricSDK) Context(options ...ContextOption) contextApi.ClientProvide
 
 	return clientProvider
 }
+//test
+func (sdk *FabricSDK) QueryBlockInfo(ChannelID string, path string) (*fab.BlockchainInfoResponse, error) {
+	sdk, err := New(config.FromFile(path))
+	if err != nil {
+		log.Panicf("failed to create fabric sdk: %s", err)
+	}
 
+	ccp := sdk.ChannelContext(ChannelID, WithUser("Admin"))
+
+
+
+	client, err := ledger.New(ccp)
+	blockchain, err := client.QueryInfo()
+	if err != nil {
+		return nil, err
+	}
+	return blockchain, nil
+}
 //ChannelContext creates and returns channel context
 func (sdk *FabricSDK) ChannelContext(channelID string, options ...ContextOption) contextApi.ChannelProvider {
 
